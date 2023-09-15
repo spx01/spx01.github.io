@@ -17,7 +17,7 @@ const FUNCLIST = [
   ["GAME_print_current_state", null, ["number"]],
   ["GAME_get_current_state_block_count", "number", ["number"]],
   ["GAME_cell_where_connected", "number", ["number", "number"]],
-  ["GAME_get_current_state_b64", "number", ["number"]],
+  ["GAME_get_current_state_b64", "string", ["number"]],
 ];
 
 // TODO: decorations
@@ -387,3 +387,26 @@ function main() {
 }
 
 Module.onRuntimeInitialized = main;
+
+function github_auth() {
+  const endpoint = "https://github.com/login/oauth/authorize";
+  const form = document.createElement("form");
+  form.setAttribute("method", "GET");
+  form.setAttribute("action", endpoint);
+  const client_id = "8e731e73c3546ed4e536";
+  const params = {
+    client_id: client_id,
+    scope: "gist",
+    state: "1234567890",
+    redirect_uri: window.location.href,
+  };
+  for (const key in params) {
+    const input = document.createElement("input");
+    input.setAttribute("type", "hidden");
+    input.setAttribute("name", key);
+    input.setAttribute("value", params[key]);
+    form.appendChild(input);
+  }
+  document.body.appendChild(form);
+  form.submit();
+}
