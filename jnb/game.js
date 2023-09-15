@@ -367,6 +367,8 @@ function main() {
   if (window.location.hash) {
     // init code in the future, from the url
     console.log("Loading from url: " + window.location.hash);
+    const b64 = window.location.hash.slice(1);
+    const data = atob(b64);
   }
 
   if (random_colors) {
@@ -388,25 +390,48 @@ function main() {
 
 Module.onRuntimeInitialized = main;
 
-function github_auth() {
-  const endpoint = "https://github.com/login/oauth/authorize";
-  const form = document.createElement("form");
-  form.setAttribute("method", "GET");
-  form.setAttribute("action", endpoint);
-  const client_id = "8e731e73c3546ed4e536";
-  const params = {
-    client_id: client_id,
-    scope: "gist",
-    state: "1234567890",
-    redirect_uri: window.location.href,
-  };
-  for (const key in params) {
-    const input = document.createElement("input");
-    input.setAttribute("type", "hidden");
-    input.setAttribute("name", key);
-    input.setAttribute("value", params[key]);
-    form.appendChild(input);
+function urlparams_to_obj(entries) {
+  const res = {};
+  for (const [key, value] of entries) {
+    res[key] = value;
   }
-  document.body.appendChild(form);
-  form.submit();
+  return res;
+}
+
+async function github_auth() {
+  // const endpoint =
+  //   "https://corsproxy.io/?" +
+  //   encodeURIComponent("https://github.com/login/device/code");
+  const endpoint = "https://github.com/login/device/code";
+  const client_id = "8e731e73c3546ed4e536";
+  const scope = "gist";
+
+  const params = new URLSearchParams({
+    client_id: client_id,
+    scope: scope,
+  });
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+    body: params,
+    mode: "cors",
+  });
+
+  if (!response.ok) {
+    console.log(response);
+    return;
+  }
+
+  console.log("is ok");
+
+  const data = urlparams_to_obj(new URLSearchParams(await response.text()));
+  console.log(data);
+  // const endpoint = "spx01/d79fd6362e34f62eb310525578b9dd75";
+  // const response = await fetch(endpoint);
+  // if (!response.ok) {
+  //   console.log(response);
+  //   return;
+  // }
+  // const data = await response.text();
+  // console.log(data);
 }
