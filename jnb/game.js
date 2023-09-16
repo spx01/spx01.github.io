@@ -228,7 +228,7 @@ function draw_game() {
       // iterate in the directions so that we can make sure that the connected
       // pieces use the same atlas tile, otherwise don't consider them together
       // for micro tiling and use a decoration instead
-      let decoration_dirs = 0;
+      let border_dirs = 0;
       for (let dir = 0; dir < 4; dir++) {
         if (!(connected & (1 << dir))) {
           continue;
@@ -240,17 +240,17 @@ function draw_game() {
           new_pos[1] < 0 ||
           new_pos[1] >= BOARD_HEIGHT
         ) {
-          decoration_dirs |= 1 << dir;
+          border_dirs |= 1 << dir;
           continue;
         }
         if (
           atlas_pos_board[y][x].toString() !=
           atlas_pos_board[new_pos[1]][new_pos[0]].toString()
         ) {
-          decoration_dirs |= 1 << dir;
+          border_dirs |= 1 << dir;
         }
       }
-      connected ^= decoration_dirs;
+      connected ^= border_dirs;
       const minitile_idxs = get_minitile_idxs(connected);
       for (let i = 0; i < 2; i++) {
         for (let j = 0; j < 2; j++) {
@@ -396,42 +396,4 @@ function urlparams_to_obj(entries) {
     res[key] = value;
   }
   return res;
-}
-
-async function github_auth() {
-  // const endpoint =
-  //   "https://corsproxy.io/?" +
-  //   encodeURIComponent("https://github.com/login/device/code");
-  const endpoint = "https://github.com/login/device/code";
-  const client_id = "8e731e73c3546ed4e536";
-  const scope = "gist";
-
-  const params = new URLSearchParams({
-    client_id: client_id,
-    scope: scope,
-  });
-
-  const response = await fetch(endpoint, {
-    method: "POST",
-    body: params,
-    mode: "cors",
-  });
-
-  if (!response.ok) {
-    console.log(response);
-    return;
-  }
-
-  console.log("is ok");
-
-  const data = urlparams_to_obj(new URLSearchParams(await response.text()));
-  console.log(data);
-  // const endpoint = "spx01/d79fd6362e34f62eb310525578b9dd75";
-  // const response = await fetch(endpoint);
-  // if (!response.ok) {
-  //   console.log(response);
-  //   return;
-  // }
-  // const data = await response.text();
-  // console.log(data);
 }
