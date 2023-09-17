@@ -1,3 +1,5 @@
+"use strict";
+
 const FUNCLIST = [
   ["GAME_test", null, ["number"]],
   ["GAME_new", "number", []],
@@ -325,9 +327,8 @@ function click_handler(evt) {
   // otherwise, we deselect the cell
   if (cell_selected_pos) {
     if (pos[0] == cell_selected_pos[0]) {
-      if (pos[1] != cell_selected_pos[1]) {
-        cell_selected_pos = null;
-      }
+      cell_selected_pos = null;
+      draw_game();
       return;
     }
 
@@ -356,8 +357,6 @@ function main() {
   }
 
   ctx = canvas.getContext("2d");
-
-  ctx.canvas.height = (10 / 14) * ctx.canvas.width;
   canvas.width = CELL_SIZE * BOARD_WIDTH;
   canvas.height = CELL_SIZE * BOARD_HEIGHT;
 
